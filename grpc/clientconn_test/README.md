@@ -1,25 +1,25 @@
 # gRPC client connection test
 How to maximize the client concurrency.
 
-## Methods
-1. One connection per request
-1. Only one client, one connection
-1. Fixed-size connection pool & Round Robin Usage
-Use a fixed-size connection pool, fetch a connection round-robin.
-1. Fixed-size Connection pool
+## 3 ways
+1. One connection per request  
+Create a connection when request is made.
+1. Only one client, one connection  
+Use a common client by all requests.
+1. Fixed-size Connection pool  
 If connection pool has enough connections, take it from pool, otherwise create a new connection.
 The connection pool has fixed max capacity, release unused connection to pool when it's not full.
 
 ## Performance Comparison(Local Computer)
 **Hardware**
-MacBook Pro (15-inch, 2016)
-Processor 2.7 GHz Intel Core i7
+MacBook Pro (15-inch, 2016)  
+Processor 2.7 GHz Intel Core i7  
 Memory 16GB 2133 MHz LPDDR3
 
 **Press tool, client and server run on the same machine**
 
 ### Server just says hello to client
-1. One client, one connection
+1. Only one client, one connection
     ```bash
     $ wrk -t2 -c100 -d10s http://localhost:10099/performance
     Running 10s test @ http://localhost:10099/performance
@@ -31,10 +31,10 @@ Memory 16GB 2133 MHz LPDDR3
     Requests/sec:  31532.58
     Transfer/sec:      3.85MB
     ```
-1. Fixed-size Connection pool
+1. Fixed-size Connection pool  
 Take connection from pool first, otherwise create a new connection.
     ```bash
-    wrk -t2 -c100 -d10s http://localhost:10099/performance
+    $ wrk -t2 -c100 -d10s http://localhost:10099/performance
     Running 10s test @ http://localhost:10099/performance
       2 threads and 100 connections
       Thread Stats   Avg      Stdev     Max   +/- Stdev
@@ -44,12 +44,14 @@ Take connection from pool first, otherwise create a new connection.
     Requests/sec:   3100.89
     Transfer/sec:    387.61KB
     ```
+1. One connection per request  
+Close to the second result, about 3000 Requests/sec
 
 ### Server sleeps 0.5s and says hello to client
 
-1. 5 client and round robin
+1. Only one client, one connection
     ```bash
-    wrk -t2 -c100 -d10s http://localhost:10099/performance
+    $ wrk -t2 -c100 -d10s http://localhost:10099/performance
     Running 10s test @ http://localhost:10099/performance
       2 threads and 100 connections
       Thread Stats   Avg      Stdev     Max   +/- Stdev
@@ -60,9 +62,9 @@ Take connection from pool first, otherwise create a new connection.
     Transfer/sec:     24.75KB
     ```
 
-1. fixed connection pool, and expansion
+1. Fixed-size Connection pool  
     ```bash
-    wrk -t2 -c100 -d10s http://localhost:10099/performance
+    $ wrk -t2 -c100 -d10s http://localhost:10099/performance
     Running 10s test @ http://localhost:10099/performance
       2 threads and 100 connections
       Thread Stats   Avg      Stdev     Max   +/- Stdev
@@ -75,7 +77,7 @@ Take connection from pool first, otherwise create a new connection.
 
 1. one connection per request
     ```bash
-    wrk -t2 -c100 -d10s http://localhost:10099/performance
+    $ wrk -t2 -c100 -d10s http://localhost:10099/performance
     Running 10s test @ http://localhost:10099/performance
       2 threads and 100 connections
       Thread Stats   Avg      Stdev     Max   +/- Stdev
