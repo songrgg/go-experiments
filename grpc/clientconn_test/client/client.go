@@ -19,14 +19,13 @@
 package main
 
 import (
+	"context"
 	"log"
+	"net/http"
 	"os"
 	"sync"
 	"time"
 
-	"net/http"
-
-	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	pb "google.golang.org/grpc/examples/helloworld/helloworld"
 )
